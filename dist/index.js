@@ -5,18 +5,18 @@ import * as fs from "fs";
 export default function hotServiceWorkerPlugin(options = {}) {
     const conf = {
         serviceWorkerFileName: 'service-worker.ts',
-        buildDir: '',
+        buildDir: import.meta.dirname,
         targetFile: '/public/service-worker.js'
     };
     const doMake = (server) => {
-        execSync('vite build -c ' + path.resolve(import.meta.dirname, 'vite-sw.config.js') + ' --outDir=' + conf.buildDir, { stdio: 'inherit' });
+        execSync('vite build -c ' + path.resolve(import.meta.dirname, 'vite-sw.config.tmp.js') + ' --outDir=' + conf.buildDir, { stdio: 'inherit' });
         execSync('cp ' + conf.buildDir + '/service-worker.js ' + server.config.root + conf.targetFile);
         server.ws.send({ type: "full-reload", path: "*" });
     };
     return {
         name: 'vite-plugin-hot-sw',
         enforce: 'post',
-        config(config) {
+        config() {
             if (options.buildDirectory) {
                 conf.buildDir = options.buildDirectory;
             }
@@ -30,12 +30,17 @@ export default function hotServiceWorkerPlugin(options = {}) {
             if (options.targetFile) {
                 conf.targetFile = options.targetFile;
             }
+            if (options.serviceWorkerFileName) {
+                conf.serviceWorkerFileName = options.serviceWorkerFileName;
+            }
         },
         configureServer(server) {
+            const confContent = fs.readFileSync(path.resolve(import.meta.dirname, 'vite-sw.config.js')).toString();
+            fs.writeFileSync(path.resolve(import.meta.dirname, 'vite-sw.config.tmp.js'), confContent.replace('#SERVICE_WORKER_FILE_NAME#', './src/' + conf.serviceWorkerFileName));
             doMake(server);
         },
         handleHotUpdate({ file, server }) {
-            if (file.includes(conf.serviceWorkerFileName)) {
+            if (file.includes('src/' + conf.serviceWorkerFileName)) {
                 doMake(server);
             }
         },

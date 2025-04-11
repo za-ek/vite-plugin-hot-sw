@@ -29,11 +29,11 @@ export default defineConfig({
 
 ## Parameters
 
-| Option                  | Type   | Default                   | Description | 
-|-------------------------|--------|---------------------------| --- |
-| `serviceWorkerFileName` | string | service-worker.ts         | Filename filter for hot-reload|
-| `targetFile`            | string | /public/service-worker.js | Filename of output script relative to project root|
-| `buildDirectory`        | string | tmp directory             | Directory where to store provisional build |
+| Option                  | Type   | Default                   | Description                                        | 
+|-------------------------|--------|---------------------------|----------------------------------------------------|
+| `serviceWorkerFileName` | string | service-worker.ts         | Filename for compile relative to /src              |
+| `targetFile`            | string | /public/service-worker.js | Filename of output script relative to project root |
+| `buildDirectory`        | string | tmp directory             | Directory where to store provisional build         |
 
 
 ## Example configuration

@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     build: {
         lib: {
-            entry: './src/service-worker.ts',
+            entry: '#SERVICE_WORKER_FILE_NAME#',
             name: 'service-worker',
             fileName: () => `service-worker.js`,
         },
