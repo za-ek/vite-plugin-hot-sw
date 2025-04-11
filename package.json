@@ -1,13 +1,13 @@
 {
   "name": "vite-plugin-hot-sw",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "homepage": "",
-  "keywords": [],
+  "keywords": ["service-worker", "hot-reload", "vite-plugin"],
   "author": "",
   "license": "ISC",
   "description": "",
