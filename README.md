@@ -26,14 +26,14 @@ export default defineConfig({
 ```
 
 3. The plugin will watch on /src/service-worker.ts file by default
-4. When you use this plugin with default configuration it will override service-worker.js file in dist directory, so if you make changes in service-worker.ts file after build it will be overwritten in /dist/service-worker.js
 
 ## Parameters
 
-Option | Type   | Default | Description 
---- |--------|---  | --- 
-`buildConfigPath` | string | - | The internal configuration file is used by default 
-`serviceWorkerFileName` | string | service-worker.ts | filename for watch changes
+| Option                  | Type   | Default                   | Description | 
+|-------------------------|--------|---------------------------| --- |
+| `serviceWorkerFileName` | string | service-worker.ts         | Filename filter for hot-reload|
+| `targetFile`            | string | /public/service-worker.js | Filename of output script relative to project root|
+| `buildDirectory`        | string | tmp directory             | Directory where to store provisional build |
 
 
 ## Example configuration
@@ -43,8 +43,9 @@ import hotServiceWorker from'vite-plugin-hot-sw'
 export default defineConfig({
     plugins: [
         hotServiceWorker({
-            buildConfigPath: path.resolve(__dirname, 'vite-sw.config.ts'),
             serviceWorkerFileName: 'sw.ts',
+            targetFile: '/public/sw.js',
+            buildDirectory: path.resolve(__dirname, 'dist-sw'),
         }),
     ],
 })

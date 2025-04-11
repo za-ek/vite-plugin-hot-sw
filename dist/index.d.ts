@@ -1,8 +1,7 @@
 import { PluginOption } from 'vite';
 export type HotServiceWorkerOptions = {
-    buildConfigPath?: string;
     serviceWorkerFileName?: string;
     buildDirectory?: string;
-    targetDirectory?: string;
+    targetFile?: string;
 };
 export default function hotServiceWorkerPlugin(options?: HotServiceWorkerOptions): PluginOption;
