@@ -2,14 +2,17 @@ import { execSync } from 'child_process';
 import path from "path";
 import * as os from "os";
 import * as fs from "fs";
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 export default function hotServiceWorkerPlugin(options = {}) {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
     const conf = {
         serviceWorkerFileName: 'service-worker.ts',
-        buildDir: import.meta.dirname,
+        buildDir: __dirname,
         targetFile: '/public/service-worker.js'
     };
     const doMake = (server) => {
-        execSync('vite build -c ' + path.resolve(import.meta.dirname, 'vite-sw.config.tmp.js') + ' --outDir=' + conf.buildDir, { stdio: 'inherit' });
+        execSync('vite build -c ' + path.resolve(__dirname, 'vite-sw.config.tmp.js') + ' --outDir=' + conf.buildDir, { stdio: 'inherit' });
         execSync('cp ' + conf.buildDir + '/service-worker.js ' + server.config.root + conf.targetFile);
         server.ws.send({ type: "full-reload", path: "*" });
     };
@@ -35,8 +38,8 @@ export default function hotServiceWorkerPlugin(options = {}) {
             }
         },
         configureServer(server) {
-            const confContent = fs.readFileSync(path.resolve(import.meta.dirname, 'vite-sw.config.js')).toString();
-            fs.writeFileSync(path.resolve(import.meta.dirname, 'vite-sw.config.tmp.js'), confContent.replace('#SERVICE_WORKER_FILE_NAME#', './src/' + conf.serviceWorkerFileName));
+            const confContent = fs.readFileSync(path.resolve(__dirname, 'vite-sw.config.js')).toString();
+            fs.writeFileSync(path.resolve(__dirname, 'vite-sw.config.tmp.js'), confContent.replace('#SERVICE_WORKER_FILE_NAME#', './src/' + conf.serviceWorkerFileName));
             doMake(server);
         },
         handleHotUpdate({ file, server }) {
