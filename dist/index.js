@@ -52,7 +52,7 @@ export default function hotServiceWorkerPlugin(options = {}) {
         },
         configureServer(server) {
             const confContent = fs.readFileSync(path.resolve(__dirname, 'vite-sw.config.js')).toString();
-            fs.writeFileSync(path.resolve(__dirname, 'vite-sw.config.tmp.js'), confContent.replace('#SERVICE_WORKER_FILE_NAME#', path.join('.', conf.serviceWorkerFileName)));
+            fs.writeFileSync(path.resolve(__dirname, 'vite-sw.config.tmp.js'), confContent.replace('#SERVICE_WORKER_FILE_NAME#', path.join('.', conf.serviceWorkerFileName).replace(/[\\$'"]/g, "\\$&")));
             doMake(server);
         },
         handleHotUpdate({ file, server }) {
