@@ -50,3 +50,13 @@ export default defineConfig({
     ],
 })
 ```
+
+You can use multiple builders for different environments:
+```ts
+export default defineConfig({
+    plugins: [
+        hotServiceWorker(),
+        hotServiceWorker({targetFile: '/dist/sw.js',}),
+    ],
+})
+```

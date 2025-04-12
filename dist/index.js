@@ -5,15 +5,17 @@ import * as fs from "fs";
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 export default function hotServiceWorkerPlugin(options = {}) {
+    const confID = JSON.stringify(options).split("").map(c => c.charCodeAt(0)).reduce((ps, a) => ps + a, 0);
     const __plugin_name = 'vite-plugin-hot-sw';
     const __dirname = dirname(fileURLToPath(import.meta.url));
     const conf = {
         serviceWorkerFileName: path.join('src', 'service-worker.ts'),
         buildDir: __dirname,
-        targetFile: path.join('public', 'service-worker.js')
+        targetFile: path.join('public', 'service-worker.js'),
+        configFile: path.resolve(__dirname, confID + '-vite-sw.config.tmp.js'),
     };
     const doMake = (server) => {
-        execSync('vite build -c ' + path.resolve(__dirname, 'vite-sw.config.tmp.js') + ' --outDir=' + conf.buildDir);
+        execSync('vite build -c ' + conf.configFile + ' --outDir=' + conf.buildDir);
         const copyTarget = path.join(server.config.root, conf.targetFile);
         fs.copyFile(path.join(conf.buildDir, 'service-worker.js'), copyTarget, (err) => {
             if (err) {
@@ -32,7 +34,7 @@ export default function hotServiceWorkerPlugin(options = {}) {
     return {
         name: __plugin_name,
         enforce: 'post',
-        config() {
+        config(args) {
             if (options.buildDirectory) {
                 conf.buildDir = options.buildDirectory;
             }
@@ -52,8 +54,13 @@ export default function hotServiceWorkerPlugin(options = {}) {
         },
         configureServer(server) {
             const confContent = fs.readFileSync(path.resolve(__dirname, 'vite-sw.config.js')).toString();
-            fs.writeFileSync(path.resolve(__dirname, 'vite-sw.config.tmp.js'), confContent.replace('#SERVICE_WORKER_FILE_NAME#', path.join('.', conf.serviceWorkerFileName).replace(/[\\$'"]/g, "\\$&")));
-            doMake(server);
+            fs.writeFileSync(conf.configFile, confContent.replace('#SERVICE_WORKER_FILE_NAME#', path.join('.', conf.serviceWorkerFileName).replace(/[\\$'"]/g, "\\$&")));
+            server.watcher.on('change', async (file) => {
+                if (file.includes(conf.serviceWorkerFileName)) {
+                    doMake(server);
+                }
+            });
+            // doMake(server);
         },
         handleHotUpdate({ file, server }) {
             if (file.includes(conf.serviceWorkerFileName)) {
