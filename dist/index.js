@@ -5,19 +5,32 @@ import * as fs from "fs";
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 export default function hotServiceWorkerPlugin(options = {}) {
+    const __plugin_name = 'vite-plugin-hot-sw';
     const __dirname = dirname(fileURLToPath(import.meta.url));
     const conf = {
-        serviceWorkerFileName: 'service-worker.ts',
+        serviceWorkerFileName: path.join('src', 'service-worker.ts'),
         buildDir: __dirname,
-        targetFile: '/public/service-worker.js'
+        targetFile: path.join('public', 'service-worker.js')
     };
     const doMake = (server) => {
-        execSync('vite build -c ' + path.resolve(__dirname, 'vite-sw.config.tmp.js') + ' --outDir=' + conf.buildDir, { stdio: 'inherit' });
-        execSync('cp ' + conf.buildDir + '/service-worker.js ' + server.config.root + conf.targetFile);
-        server.ws.send({ type: "full-reload", path: "*" });
+        execSync('vite build -c ' + path.resolve(__dirname, 'vite-sw.config.tmp.js') + ' --outDir=' + conf.buildDir);
+        const copyTarget = path.join(server.config.root, conf.targetFile);
+        fs.copyFile(path.join(conf.buildDir, 'service-worker.js'), copyTarget, (err) => {
+            if (err) {
+                if (err.code === 'ENOENT') {
+                    console.warn(`[${__plugin_name}] Couldn't create a target. Check if directory exists: ${copyTarget}`);
+                }
+                else {
+                    throw err;
+                }
+            }
+            else {
+                server.ws.send({ type: "full-reload", path: "*" });
+            }
+        });
     };
     return {
-        name: 'vite-plugin-hot-sw',
+        name: __plugin_name,
         enforce: 'post',
         config() {
             if (options.buildDirectory) {
@@ -39,11 +52,11 @@ export default function hotServiceWorkerPlugin(options = {}) {
         },
         configureServer(server) {
             const confContent = fs.readFileSync(path.resolve(__dirname, 'vite-sw.config.js')).toString();
-            fs.writeFileSync(path.resolve(__dirname, 'vite-sw.config.tmp.js'), confContent.replace('#SERVICE_WORKER_FILE_NAME#', './src/' + conf.serviceWorkerFileName));
+            fs.writeFileSync(path.resolve(__dirname, 'vite-sw.config.tmp.js'), confContent.replace('#SERVICE_WORKER_FILE_NAME#', path.join('.', conf.serviceWorkerFileName)));
             doMake(server);
         },
         handleHotUpdate({ file, server }) {
-            if (file.includes('src/' + conf.serviceWorkerFileName)) {
+            if (file.includes(conf.serviceWorkerFileName)) {
                 doMake(server);
             }
         },

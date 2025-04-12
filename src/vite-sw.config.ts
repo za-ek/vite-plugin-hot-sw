@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import path from "path";
 
 export default defineConfig({
     build: {
@@ -20,7 +21,7 @@ export default defineConfig({
         sourcemap: false,
     },
     optimizeDeps: {
-        include: ['src/service-worker.ts'],
+        include: [path.join('src', 'service-worker.ts')],
     },
     define: {
         'process.env': {},
