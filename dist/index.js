@@ -34,7 +34,7 @@ export default function hotServiceWorkerPlugin(options = {}) {
     return {
         name: __plugin_name,
         enforce: 'post',
-        config(args) {
+        config() {
             if (options.buildDirectory) {
                 conf.buildDir = options.buildDirectory;
             }
@@ -55,12 +55,7 @@ export default function hotServiceWorkerPlugin(options = {}) {
         configureServer(server) {
             const confContent = fs.readFileSync(path.resolve(__dirname, 'vite-sw.config.js')).toString();
             fs.writeFileSync(conf.configFile, confContent.replace('#SERVICE_WORKER_FILE_NAME#', path.join('.', conf.serviceWorkerFileName).replace(/[\\$'"]/g, "\\$&")));
-            server.watcher.on('change', async (file) => {
-                if (file.includes(conf.serviceWorkerFileName)) {
-                    doMake(server);
-                }
-            });
-            // doMake(server);
+            doMake(server);
         },
         handleHotUpdate({ file, server }) {
             if (file.includes(conf.serviceWorkerFileName)) {
