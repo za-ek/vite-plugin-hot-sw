@@ -42,7 +42,7 @@ export default function hotServiceWorkerPlugin(instanceOptions = {}) {
         });
     };
     const doMake = () => {
-        execSync('vite build -c ' + conf.configFile + ' --outDir=' + conf.buildDir);
+        execSync('vite build -c "' + conf.configFile + '" --outDir="' + conf.buildDir + '"');
     };
     const doHotMake = (server) => {
         doMake();
