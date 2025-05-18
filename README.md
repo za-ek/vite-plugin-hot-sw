@@ -29,11 +29,12 @@ export default defineConfig({
 
 ## Parameters
 
-| Option                  | Type   | Default                   | Description                                        | 
-|-------------------------|--------|---------------------------|----------------------------------------------------|
-| `serviceWorkerFileName` | string | service-worker.ts         | Filename for compile relative to /src              |
-| `targetFile`            | string | /public/service-worker.js | Filename of output script relative to project root |
-| `buildDirectory`        | string | tmp directory             | Directory where to store provisional build         |
+| Option                  | Type     | Default                   | Description                                        | 
+|-------------------------|----------|---------------------------|----------------------------------------------------|
+| `serviceWorkerFileName` | string   | service-worker.ts         | Filename for compile relative to /src              |
+| `targetFile`            | string   | /public/service-worker.js | Filename of output script relative to project root |
+| `buildDirectory`        | string   | tmp directory             | Directory where to store provisional build         |
+| `customAssets`          | string[] | []                        | Files to be included in the assets list            |
 
 
 ## Example configuration
@@ -46,6 +47,7 @@ export default defineConfig({
             serviceWorkerFileName: 'sw.ts',
             targetFile: '/public/sw.js',
             buildDirectory: path.resolve(__dirname, 'dist-sw'),
+            customAssets: ['api/to_be_cached'],
         }),
     ],
 })
@@ -60,3 +62,9 @@ export default defineConfig({
     ],
 })
 ```
+
+# To inject build assets
+```
+const manifest = self.__CUSTOM_MANIFEST || [];
+```
+The variable self.__CUSTOM_MANIFEST (as is, not as self['__CUSTOM_MANIFEST']) will be replaced with an array
