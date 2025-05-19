@@ -99,11 +99,11 @@ export default function hotServiceWorkerPlugin(instanceOptions = {}) {
             prepareConfig(conf.configFile, conf.serviceWorkerFileName);
             doHotMake(server);
         },
-        writeBundle(options, bundle) {
+        async writeBundle(options, bundle) {
             assert(options.dir !== undefined);
             prepareConfig(conf.configFile, conf.serviceWorkerFileName);
             doMake();
-            hotCopy(path.resolve(options.dir, '..'));
+            await hotCopy(path.resolve(options.dir, '..'));
             const assets = (instanceOptions.customAssets || []);
             for (const [fileName] of Object.entries(bundle)) {
                 if (fileName.match(/\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|js|css)$/)) {
