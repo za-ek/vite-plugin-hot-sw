@@ -29,7 +29,7 @@ export default function hotServiceWorkerPlugin(instanceOptions: HotServiceWorker
     const __plugin_name = 'vite-plugin-hot-sw';
     const __dirname = dirname(fileURLToPath(import.meta.url));
     const conf = {
-        serviceWorkerFileName: path.join('src', 'service-worker.ts'),
+        serviceWorkerFileName: path.join('src', 'service-worker.ts').replace("\\","/"),
         buildDir: __dirname,
         targetFile: path.join('public', 'service-worker.js'),
         configFile: path.resolve(__dirname, confID + '-vite-sw.config.tmp.js'),

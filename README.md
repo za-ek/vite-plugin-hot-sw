@@ -1,6 +1,7 @@
 # vite-plugin-hot-sw
-
 Isolate build for service-worker
+
+https://github.com/za-ek/vite-plugin-hot-sw/
 
 ## When should I use this plugin
 
